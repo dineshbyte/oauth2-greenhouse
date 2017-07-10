@@ -1,0 +1,11 @@
+{
+    "name": "krdinesh/oauth2-greenhouse",
+    "description": "A OAuth2 Provider for greenhouse",
+    "authors": [
+        {
+            "name": "Dinesh kumar",
+            "email": "kumardinesh0521@gmail.com"
+        }
+    ],
+    "require": {}
+}
