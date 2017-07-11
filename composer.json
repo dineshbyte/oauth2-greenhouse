@@ -26,12 +26,12 @@
     },
     "autoload": {
         "psr-4": {
-            "krdinesh\\OAuth2\\Client\\": "src/"
+            "Krdinesh\\OAuth2\\Client\\": "src/"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "krdinesh\\OAuth2\\Client\\Test\\": "tests/src/"
+            "Krdinesh\\OAuth2\\Client\\Test\\": "tests/src/"
         }
     }
 }
