@@ -13,8 +13,6 @@ composer require krdinesh/oauth2-greenhouse
 
 Usage is the same as The League's OAuth client, using `\League\OAuth2\Client\Provider\GreenHouse` as the provider.
 
-### Authorization Code Flow
-Commin Soon
 
 ### Managing Scopes
 
@@ -22,7 +20,6 @@ When creating your GreenHouse authorization URL, you can specify the state and s
 
 ```php
 $options = [
-    'state' => 'OPTIONAL_CUSTOM_CONFIGURED_STATE',
     'scope' => ['candidates.views','candidates.create','jobs.views'] // array or string
 ];
 
