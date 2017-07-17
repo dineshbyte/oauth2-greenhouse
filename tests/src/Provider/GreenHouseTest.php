@@ -72,9 +72,6 @@ class GreenHouseTest extends \PHPUnit_Framework_TestCase {
         $this->provider->setHttpClient($client);
         $token = $this->provider->getAccessToken('authorization_code', ['code' => 'mock_authorization_code']);
         $this->assertEquals('mock_access_token', $token->getToken());
-        $this->assertNull($token->getExpires());
-        $this->assertNull($token->getRefreshToken());
-        $this->assertNull($token->getResourceOwnerId());
     }
 
     /* public function testExceptionThrownWhenErrorObjectReceived()
@@ -108,4 +105,74 @@ class GreenHouseTest extends \PHPUnit_Framework_TestCase {
         $this->provider->setHttpClient($client);
         $token = $this->provider->getAccessToken('authorization_code', ['code' => 'mock_authorization_code']);
     }*/
+
+
+    public function testUserData()
+    {
+        $email = \uniqid();
+        $firstName = \uniqid();
+        $lastName = \uniqid();
+        $postResponse = m::mock('Psr\Http\Message\ResponseInterface');
+        $postResponse->shouldReceive('getBody')->andReturn('{"access_token": "mock_access_token", "expires_in": 3600}');
+        $postResponse->shouldReceive('getHeader')->andReturn(['content-type' => 'json']);
+        $userResponse = m::mock('Psr\Http\Message\ResponseInterface');
+        $userResponse->shouldReceive('getBody')->andReturn('{"email":"'.$email.'","first_name":"'.$firstName.'","last_name":"'.$lastName.'"}');
+        $userResponse->shouldReceive('getHeader')->andReturn(['content-type' => 'json']);
+        $client = m::mock('GuzzleHttp\ClientInterface');
+        $client->shouldReceive('send')
+            ->times(2)
+            ->andReturn($postResponse, $userResponse);
+        $this->provider->setHttpClient($client);
+        $token = $this->provider->getAccessToken('authorization_code', ['code' => 'mock_authorization_code']);
+        $user = $this->provider->getResourceOwner($token);
+        $this->assertEquals($email, $user->getEmail());
+        $this->assertEquals($email, $user->toArray()['email']);
+        $this->assertEquals($firstName, $user->getFirstName());
+        $this->assertEquals($firstName, $user->toArray()['first_name']);
+        $this->assertEquals($lastName, $user->getLastName());
+        $this->assertEquals($lastName, $user->toArray()['last_name']);
+    }
+
+    public function testMissingUserData()
+    {
+        $email = \uniqid();
+        $firstName =\rand(1000,9999);
+        $lastName = \uniqid();
+        $postResponse = m::mock('Psr\Http\Message\ResponseInterface');
+        $postResponse->shouldReceive('getBody')->andReturn('{"access_token": "mock_access_token", "expires_in": 3600}');
+        $postResponse->shouldReceive('getHeader')->andReturn(['content-type' => 'json']);
+        $userResponse = m::mock('Psr\Http\Message\ResponseInterface');
+        $userResponse->shouldReceive('getBody')->andReturn('{"email": "'.$email.'", "first_name": "'.$firstName.'", "last_name": "'.$lastName.'"}');
+        $userResponse->shouldReceive('getHeader')->andReturn(['content-type' => 'json']);
+        $client = m::mock('GuzzleHttp\ClientInterface');
+        $client->shouldReceive('send')
+            ->times(2)
+            ->andReturn($postResponse, $userResponse);
+        $this->provider->setHttpClient($client);
+        $token = $this->provider->getAccessToken('authorization_code', ['code' => 'mock_authorization_code']);
+        $user = $this->provider->getResourceOwner($token);
+        $this->assertEquals($email, $user->getEmail());
+        $this->assertEquals($email, $user->toArray()['email']);
+        $this->assertEquals($firstName, $user->getFirstName());
+        $this->assertEquals($firstName, $user->toArray()['first_name']);
+        $this->assertEquals($lastName, $user->getLastName()); // https://github.com/thephpleague/oauth2-linkedin/issues/4
+        $this->assertEquals($lastName, $user->toArray()['last_name']);
+    }
+
+    public function testExceptionThrownWhenErrorObjectReceived()
+    {
+        $message = uniqid();
+        $status = rand(400,600);
+        $postResponse = m::mock('Psr\Http\Message\ResponseInterface');
+        $postResponse->shouldReceive('getBody')->andReturn('{"error_description": "'.$message.'","error": "invalid_request"}');
+        $postResponse->shouldReceive('getHeader')->andReturn(['content-type' => 'json']);
+        $postResponse->shouldReceive('getStatusCode')->andReturn($status);
+        $client = m::mock('GuzzleHttp\ClientInterface');
+        $client->shouldReceive('send')
+            ->times(1)
+            ->andReturn($postResponse);
+        $this->provider->setHttpClient($client);
+        $token = $this->provider->getAccessToken('authorization_code', ['code' => 'mock_authorization_code']);
+    }
+
 }
