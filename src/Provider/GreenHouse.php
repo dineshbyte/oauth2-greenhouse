@@ -7,6 +7,8 @@ use League\OAuth2\Client\Tool\BearerAuthorizationTrait;
 use Psr\Http\Message\ResponseInterface;
 use League\OAuth2\Client\Token\AccessToken;
 use League\OAuth2\Client\Tool\QueryBuilderTrait;
+use League\OAuth2\Client\Provider\Exception\IdentityProviderException;
+use Krdinesh\OAuth2\Client\Provider\GreenhouseResourceOwner;
 
 class GreenHouse extends AbstractProvider {
 
@@ -37,7 +39,13 @@ class GreenHouse extends AbstractProvider {
 
     protected function checkResponse(ResponseInterface $response, $data)
     {
-        // check Response of GreenHouse Integration
+        if (isset($data['error'])) {
+            throw new IdentityProviderException(
+                $data['error_description'] ?: $response->getReasonPhrase(),
+                $response->getStatusCode(),
+                $response
+            );
+        }
 
     }
      /**
@@ -47,8 +55,8 @@ class GreenHouse extends AbstractProvider {
      * @return string
      */
 
-     public function getResourceOwnerDetailsUrl(AccessToken $token){
-
+    public function getResourceOwnerDetailsUrl(AccessToken $token){
+        return 'https://api.greenhouse.io/v1/partner/current_user';
      }
 
     /**
@@ -60,6 +68,6 @@ class GreenHouse extends AbstractProvider {
      * @return ResourceOwnerInterface
      */
      protected function createResourceOwner(array $response, AccessToken $token){
-
+        return new GreenhouseResourceOwner($response);
      }
 }
