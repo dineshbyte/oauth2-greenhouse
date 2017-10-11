@@ -10,20 +10,23 @@ use League\OAuth2\Client\Tool\QueryBuilderTrait;
 use League\OAuth2\Client\Provider\Exception\IdentityProviderException;
 use Krdinesh\OAuth2\Client\Provider\GreenhouseResourceOwner;
 
-class GreenHouse extends AbstractProvider {
-
+class Greenhouse extends AbstractProvider
+{
     use BearerAuthorizationTrait;
     use QueryBuilderTrait;
 
-    public function getBaseAuthorizationUrl(){
+    public function getBaseAuthorizationUrl()
+    {
         return "https://api.greenhouse.io/oauth/authorize";
     }
 
-    public function getBaseAccessTokenUrl(array $params){
+    public function getBaseAccessTokenUrl(array $params)
+    {
         return "https://api.greenhouse.io/oauth/token";
     }
 
-    protected function getScopeSeparator(){
+    protected function getScopeSeparator()
+    {
         return '+';
     }
 
@@ -46,18 +49,18 @@ class GreenHouse extends AbstractProvider {
                 $response
             );
         }
-
     }
-     /**
-     * Returns the URL for requesting the resource owner's details.
-     *
-     * @param AccessToken $token
-     * @return string
-     */
+    /**
+    * Returns the URL for requesting the resource owner's details.
+    *
+    * @param AccessToken $token
+    * @return string
+    */
 
-    public function getResourceOwnerDetailsUrl(AccessToken $token){
+    public function getResourceOwnerDetailsUrl(AccessToken $token)
+    {
         return 'https://api.greenhouse.io/v1/partner/current_user';
-     }
+    }
 
     /**
      * Generates a resource owner object from a successful resource owner
@@ -67,7 +70,8 @@ class GreenHouse extends AbstractProvider {
      * @param  AccessToken $token
      * @return ResourceOwnerInterface
      */
-     protected function createResourceOwner(array $response, AccessToken $token){
+    protected function createResourceOwner(array $response, AccessToken $token)
+    {
         return new GreenhouseResourceOwner($response);
-     }
+    }
 }
