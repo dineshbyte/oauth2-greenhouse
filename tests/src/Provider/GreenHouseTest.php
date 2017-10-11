@@ -5,13 +5,14 @@ namespace Krdinesh\OAuth2\Client\Test\Provider;
 use League\OAuth2\Client\Tool\QueryBuilderTrait;
 use Mockery as m;
 
-class GreenHouseTest extends \PHPUnit_Framework_TestCase {
+class GreenhouseTest extends \PHPUnit_Framework_TestCase
+{
     use QueryBuilderTrait;
     protected $provider;
 
     protected function setUp()
     {
-        $this->provider = new \Krdinesh\OAuth2\Client\Provider\GreenHouse([
+        $this->provider = new \Krdinesh\OAuth2\Client\Provider\Greenhouse([
             'clientId' => 'mock_client_id',
             'clientSecret' => 'mock_secret',
             'redirectUri' => 'none',
@@ -37,7 +38,7 @@ class GreenHouseTest extends \PHPUnit_Framework_TestCase {
         $this->assertNotNull($this->provider->getState());
     }
 
-     public function testScopes()
+    public function testScopes()
     {
         $scopeSeparator = '+';
         $options = ['scope' => [uniqid(), uniqid()]];
@@ -136,7 +137,7 @@ class GreenHouseTest extends \PHPUnit_Framework_TestCase {
     public function testMissingUserData()
     {
         $email = \uniqid();
-        $firstName =\rand(1000,9999);
+        $firstName =\rand(1000, 9999);
         $lastName = \uniqid();
         $postResponse = m::mock('Psr\Http\Message\ResponseInterface');
         $postResponse->shouldReceive('getBody')->andReturn('{"access_token": "mock_access_token", "expires_in": 3600}');
@@ -162,7 +163,7 @@ class GreenHouseTest extends \PHPUnit_Framework_TestCase {
     public function testExceptionThrownWhenErrorObjectReceived()
     {
         $message = uniqid();
-        $status = rand(400,600);
+        $status = rand(400, 600);
         $postResponse = m::mock('Psr\Http\Message\ResponseInterface');
         $postResponse->shouldReceive('getBody')->andReturn('{"error_description": "'.$message.'","error": "invalid_request"}');
         $postResponse->shouldReceive('getHeader')->andReturn(['content-type' => 'json']);
@@ -174,5 +175,4 @@ class GreenHouseTest extends \PHPUnit_Framework_TestCase {
         $this->provider->setHttpClient($client);
         $token = $this->provider->getAccessToken('authorization_code', ['code' => 'mock_authorization_code']);
     }
-
 }
